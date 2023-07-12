@@ -4,48 +4,42 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const connection = require('../db');
 
-// Login API
 router.post('/login', (req, res) => {
-    const { username, password } = req.body;
+  const { username, password } = req.body;
 
-    connection.query('SELECT * FROM users WHERE username = ?', [username], (err, results) => {
-        if (err) throw err;
-        console.log(results);
-        // Check if user exists
-        if (results.length === 0) {
-            return res.status(401).json({ message: 'Invalid username or password' });
-        }
+  connection.query('SELECT * FROM users WHERE username = ?', [username], (err, results) => {
+    if (err) {
+      console.error('Error executing the query: ', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    console.log(results);
 
-        const user = results[0];
-        console.log(user);
+    // Check if user exists
+    if (results.length === 0) {
+        console.log("hiii");
+      return res.status(401).json({ message: 'Invalid username or password' });
+    }
 
-        // Compare password
-        if (password !== user.password) {
-            return res.status(401).json({ message: 'Invalid username or password' });
-        }
+    const user = results[0];
 
-        // Generate and return the JWT token
-        const token = jwt.sign({ id: user.id, role: user.role }, 'your_secret_key');
-        res.json({ token });
+    // Compare password
+    // bcrypt.compare(password, user.password, (err, isMatch) => {
+    //   if (err) {
+    //     console.error('Error comparing passwords: ', err);
+    //     res.status(500).json({ error: 'Internal Server Error' });
+    //     return;
+    //   }
 
+    //   if (!isMatch) {
+    //     return res.status(401).json({ message: 'Invalid username or password' });
+    //   }
+
+      // Generate and return the JWT token
+      const token = jwt.sign({ id: user.id, role: user.role }, 'your_secret_key');
+      res.json({ token });
+      console.log(token);
     });
-});
+  });
 
-// Authentication middleware
-function authMiddleware(req, res, next) {
-    const token = req.headers.authorization;
-
-    if (!token) {
-        return res.status(401).json({ message: 'Missing authorization token' });
-    }
-
-    try {
-        const decoded = jwt.verify(token, 'your_secret_key');
-        req.user = decoded;
-        next();
-    } catch (error) {
-        return res.status(401).json({ message: 'Invalid authorization token' });
-    }
-}
-
-module.exports = { router, authMiddleware };
+module.exports = router;
