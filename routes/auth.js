@@ -13,11 +13,9 @@ router.post('/login', (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
       return;
     }
-    console.log(results);
 
     // Check if user exists
     if (results.length === 0) {
-        console.log("hiii");
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
@@ -38,7 +36,6 @@ router.post('/login', (req, res) => {
       // Generate and return the JWT token
       const token = jwt.sign({ id: user.id, role: user.role }, 'your_secret_key');
       res.json({ token });
-      console.log(token);
     });
   });
 
