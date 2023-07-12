@@ -3,9 +3,12 @@ const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth');
 const chemicalRoutes = require('./routes/chemicals');
 const app = express();
+const cors = require('cors');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(cors());
 
 // Routes
 app.use('/api/auth', authRoutes);
