@@ -45,10 +45,10 @@ router.put('/putChemicals', (req, res) => {
 
 
 
-router.put('/editChemical/:id', (req, res) => {
-  const chemicalId = req.params.id;
+router.put('/editChemical/:chemicalid', (req, res) => {
+  const ChemicalId = req.params.chemicalid;
   const updatedChemical = req.body;
-  connection.query('UPDATE chemicals SET ? WHERE id = ?', [updatedChemical, chemicalId], (err, results) => {
+  connection.query('UPDATE chemicals SET ? WHERE ChemicalId = ?', [updatedChemical, ChemicalId], (err, results) => {
     if (err) {
       console.error('Error executing the query: ', err);
       res.status(500).json({ error: 'Internal Server Error' });
