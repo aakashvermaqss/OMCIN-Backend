@@ -17,11 +17,22 @@ router.get('/getChemicals', (req, res) => {
   });
 });
 
+router.get('/getChemicalById/:chemicalId', (req, res) => {
+  const ChemicalId = req.params.chemicalId;
+  connection.query('SELECT * FROM chemicals WHERE ChemicalId =?', [ChemicalId], (err, results) => {
+    if (err) {
+      console.error('Error executing the query: ', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    res.json(results);
+  });
+});
+
 
 
 router.put('/putChemicals', (req, res) => {
   var chemicalsData = req.body;
-  console.log(chemicalsData);
   const values = chemicalsData.map((chemical) => [
     chemical.ChemicalName,
     chemical.Brand,
@@ -29,11 +40,11 @@ router.put('/putChemicals', (req, res) => {
     chemical.CATNo,
     chemical.Purity,
     chemical.Expiration,
-    chemical.Tracability,
+    chemical.Traceability,
     chemical.ListPrice,
     chemical.SurchargePrice
   ]);
-  connection.query('INSERT INTO chemicals (ChemicalName, Brand,CASNo,CATNo,Purity,Expiration,Tracability,ListPrice,SurchargePrice) VALUES ?', [values], (err, results) => {
+  connection.query('INSERT INTO chemicals (ChemicalName, Brand,CASNo,CATNo,Purity,Expiration,Traceability,ListPrice,SurchargePrice) VALUES ?', [values], (err, results) => {
     if (err) {
       console.error('Error executing the query: ', err);
       res.status(500).json({ error: 'Internal Server Error' });
@@ -45,10 +56,24 @@ router.put('/putChemicals', (req, res) => {
 
 
 
-router.put('/editChemical/:chemicalid', (req, res) => {
-  const ChemicalId = req.params.chemicalid;
-  const updatedChemical = req.body;
-  connection.query('UPDATE chemicals SET ? WHERE ChemicalId = ?', [updatedChemical, ChemicalId], (err, results) => {
+router.put('/editChemicalById/:ChemicalId', (req, res) => {
+  const chemicalId = req.params.ChemicalId;
+  const updatedChemicalData = req.body; 
+
+  const values = [
+    updatedChemicalData.ChemicalName,
+    updatedChemicalData.Brand,
+    updatedChemicalData.CASNo,
+    updatedChemicalData.CATNo,
+    updatedChemicalData.Purity,
+    updatedChemicalData.Expiration,
+    updatedChemicalData.Traceability,
+    updatedChemicalData.ListPrice,
+    updatedChemicalData.SurchargePrice,
+    chemicalId
+  ];
+
+  connection.query('UPDATE chemicals SET ChemicalName = ?, Brand = ?, CASNo = ?, CATNo = ?, Purity = ?, Expiration = ?, Traceability = ?, ListPrice = ?, SurchargePrice = ? WHERE ChemicalId = ?', values, (err, results) => {
     if (err) {
       console.error('Error executing the query: ', err);
       res.status(500).json({ error: 'Internal Server Error' });
@@ -57,6 +82,7 @@ router.put('/editChemical/:chemicalid', (req, res) => {
     res.json(results);
   });
 });
+
 
 
 
