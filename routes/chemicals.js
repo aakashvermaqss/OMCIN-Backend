@@ -17,6 +17,34 @@ router.get('/getChemicals', (req, res) => {
   });
 });
 
+router.get('/searchChemicals/:searchData', (req, res) => {
+  var searchTerm = req.params.searchData;
+  const query = `
+    SELECT *
+    FROM chemicals
+    WHERE 
+    ChemicalName LIKE '%${searchTerm}%' OR
+    Brand LIKE '%${searchTerm}%' OR
+    CASNo LIKE '%${searchTerm}%' OR
+    CATNo LIKE '%${searchTerm}%' OR
+    Purity LIKE '%${searchTerm}%' OR
+    Expiration LIKE '%${searchTerm}%' OR
+    Traceability LIKE '%${searchTerm}%' OR
+    ListPrice LIKE '%${searchTerm}%' OR
+    SurchargePrice LIKE '%${searchTerm}%'
+  `;
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error executing the query: ', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+
+    res.json(results);
+  });
+});
+
 router.get('/getChemicalById/:chemicalId', (req, res) => {
   const ChemicalId = req.params.chemicalId;
   connection.query('SELECT * FROM chemicals WHERE ChemicalId =?', [ChemicalId], (err, results) => {
@@ -97,6 +125,8 @@ router.delete('/deleteChemicals/:chemicalId', (req, res) => {
     res.json(results);
   });
 });
+
+router.search
 
 
 
