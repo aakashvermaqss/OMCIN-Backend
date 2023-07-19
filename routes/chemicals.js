@@ -57,6 +57,23 @@ router.get('/getChemicalById/:chemicalId', (req, res) => {
   });
 });
 
+router.put('/filterChemicals', (req, res) => {
+  const SliderStartValue = req.body.SliderStartValue;
+  const SliderEndValue= req.body.SliderEndValue;
+  const Expiration= req.body.Expiration;
+  const Currency= req.body.Currency;
+  connection.query('SELECT * FROM chemicals WHERE ListPrice >= ? AND ListPrice <= ? AND Expiration = ?', [SliderStartValue, SliderEndValue, Expiration], (err, results) => {
+    if (err) {
+      console.error('Error executing the query: ', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+    res.json(results);
+  });
+});
+
+ 
+
 
 
 router.put('/putChemicals', (req, res) => {
@@ -86,6 +103,7 @@ router.put('/putChemicals', (req, res) => {
 
 router.put('/editChemicalById/:ChemicalId', (req, res) => {
   const chemicalId = req.params.ChemicalId;
+  console.log(req.body);
   const updatedChemicalData = req.body; 
 
   const values = [
