@@ -144,8 +144,4 @@ router.delete('/deleteChemicals/:chemicalId', (req, res) => {
   });
 });
 
-router.search
-
-
-
 module.exports = router;

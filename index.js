@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth');
 const chemicalRoutes = require('./routes/chemicals');
+const companyRoutes = require('./routes/company');
 const app = express();
 const cors = require('cors');
 
@@ -13,6 +14,7 @@ app.use(cors());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/chemicals', chemicalRoutes);
+app.use('/api/companies', companyRoutes);
 
 // Start the server
 const port = 3000;
