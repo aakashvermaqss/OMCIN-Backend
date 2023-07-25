@@ -16,7 +16,7 @@ app.use(cors());
 app.use('/api/auth', authRoutes);
 app.use('/api/chemicals', chemicalRoutes);
 app.use('/api/companies', companyRoutes);
-app.use('/api/emplyees', employeeRoutes);
+app.use('/api/employees', employeeRoutes);
 
 // Start the server
 const port = 3000;
