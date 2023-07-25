@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const connection = require('../db');
+const crypto = require('crypto');
+const secretKey = crypto.randomBytes(32).toString('hex');
 
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
@@ -10,33 +11,23 @@ router.post('/login', (req, res) => {
   connection.query('SELECT * FROM users WHERE username = ?', [username], (err, results) => {
     if (err) {
       console.error('Error executing the query: ', err);
-      res.status(500).json({ error: 'Internal Server Error' });
-      return;
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
 
-    // Check if user exists
     if (results.length === 0) {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
-
     const user = results[0];
 
-    // Compare password
-    // bcrypt.compare(password, user.password, (err, isMatch) => {
-    //   if (err) {
-    //     console.error('Error comparing passwords: ', err);
-    //     res.status(500).json({ error: 'Internal Server Error' });
-    //     return;
-    //   }
-
-    //   if (!isMatch) {
-    //     return res.status(401).json({ message: 'Invalid username or password' });
-    //   }
-
-      // Generate and return the JWT token
-      const token = jwt.sign({ id: user.id, role: user.role }, 'your_secret_key');
-      res.json({ token });
-    });
+    if (password === user.password) {
+      const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secretKey, { expiresIn: '1h' });
+      return res.status(200).json({ message: 'Login Succesful',token });
+    }
+    else
+    {
+      return res.status(401).json({ message: 'Invalid username or password' });
+    }
   });
+});
 
 module.exports = router;

@@ -5,7 +5,7 @@ const connection = require('../db');
 
 //apis
 
-router.get('/getAllCompany', (req, res) => {
+router.get('/getCompany', (req, res) => {
     connection.query('SELECT * FROM companies', (err, results) => {
         if (err) {
             console.error('Error executing the query: ', err);
@@ -16,20 +16,6 @@ router.get('/getAllCompany', (req, res) => {
         res.json(results);
     });
 });
-
-// CompanyId INT PRIMARY KEY AUTO_INCREMENT,
-//   CompanyName  VARCHAR(255),
-//   Address VARCHAR(255),
-//   Country VARCHAR(255),
-//   State VARCHAR(255),
-//   City VARCHAR(255),
-//   Zipcode VARCHAR(255),
-//   GSTNo VARCHAR(255),
-//   VATNo DECIMAL(10, 2),
-//   CIN DECIMAL(10, 2),
-//   Currency varchar(255));
-  
-
 
 router.get('/searchCompany/:searchData', (req, res) => {
     var searchTerm = req.params.searchData;
@@ -46,7 +32,7 @@ router.get('/searchCompany/:searchData', (req, res) => {
       GSTNo LIKE '%${searchTerm}%' OR
       VATNo LIKE '%${searchTerm}%' OR
       CIN LIKE '%${searchTerm}%' OR
-      Currency '%${searchTerm}%'
+      Currency LIKE '%${searchTerm}%'
     `;
 
     connection.query(query, (err, results) => {
@@ -86,12 +72,13 @@ router.put('/filterCompany', (req, res) => {
     });
 });
 
-router.post('/addCompany', (req, res) => {
-    const newCompanyData = req.body;
+router.put('/addCompany', (req, res) => {
+    const CompanyData = req.body;
 
-    const values = [
+    const values= CompanyData.map((newCompanyData) => [
         newCompanyData.CompanyName,
         newCompanyData.Address,
+        newCompanyData.Address2,
         newCompanyData.Country,
         newCompanyData.State,
         newCompanyData.City,
@@ -100,25 +87,27 @@ router.post('/addCompany', (req, res) => {
         newCompanyData.VATNo,
         newCompanyData.CIN,
         newCompanyData.Currency,
-    ];
+    ]);
 
-    connection.query('INSERT INTO companies (CompanyName, Address, Country, State, City, Zipcode, GSTNo, VATNo, CIN, Currency) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', values, (err, results) => {
+    connection.query('INSERT INTO companies (CompanyName, Address, Country, State, City, Zipcode, GSTNo, VATNo, CIN, Currency, Address2) VALUES ?', [values], (err, results) => {
         if (err) {
             console.error('Error executing the query: ', err);
             res.status(500).json({ error: 'Internal Server Error' });
             return;
         }
-        res.json({ message: 'Company data inserted successfully!', insertedId: results.insertId });
+        res.json(results);
     });
 });
 
 router.put('/editCompanyById/:companyId', (req, res) => {
     const CompanyId = req.params.companyId;
     const updatedCompanyData = req.body;
+    console.log(CompanyId,updatedCompanyData);
 
     const values = [
         updatedCompanyData.CompanyName,
         updatedCompanyData.Address,
+        updatedCompanyData.Address2,
         updatedCompanyData.Country,
         updatedCompanyData.State,
         updatedCompanyData.City,
@@ -130,7 +119,7 @@ router.put('/editCompanyById/:companyId', (req, res) => {
         CompanyId
     ];
 
-    connection.query('UPDATE companies SET CompanyName = ?, Address = ?, Country = ?, State = ?, City = ?, Zipcode = ?, GSTNo = ?, VATNo = ?, CIN = ?,Currency = ? WHERE CompanyId = ?', values, (err, results) => {
+    connection.query('UPDATE companies SET CompanyName = ?, Address = ?, Address2 = ?, Country = ?, State = ?, City = ?, Zipcode = ?, GSTNo = ?, VATNo = ?, CIN = ?,Currency = ? WHERE CompanyId = ?', values, (err, results) => {
         if (err) {
             console.error('Error executing the query: ', err);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -139,9 +128,6 @@ router.put('/editCompanyById/:companyId', (req, res) => {
         res.json(results);
     });
 });
-
-
-
 
 router.delete('/deleteCompany/:companyId', (req, res) => {
     const CompanyId = req.params.companyId;
@@ -154,10 +140,6 @@ router.delete('/deleteCompany/:companyId', (req, res) => {
         res.json(results);
     });
 });
-
-
-
-
 
 module.exports = router;
 
