@@ -103,7 +103,6 @@ router.put('/putChemicals', (req, res) => {
 
 router.put('/editChemicalById/:ChemicalId', (req, res) => {
   const chemicalId = req.params.ChemicalId;
-  console.log(req.body);
   const updatedChemicalData = req.body; 
 
   const values = [

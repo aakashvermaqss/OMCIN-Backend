@@ -78,7 +78,6 @@ router.put('/addCompany', (req, res) => {
     const values= CompanyData.map((newCompanyData) => [
         newCompanyData.CompanyName,
         newCompanyData.Address,
-        newCompanyData.Address2,
         newCompanyData.Country,
         newCompanyData.State,
         newCompanyData.City,
@@ -87,6 +86,7 @@ router.put('/addCompany', (req, res) => {
         newCompanyData.VATNo,
         newCompanyData.CIN,
         newCompanyData.Currency,
+        newCompanyData.Address2
     ]);
 
     connection.query('INSERT INTO companies (CompanyName, Address, Country, State, City, Zipcode, GSTNo, VATNo, CIN, Currency, Address2) VALUES ?', [values], (err, results) => {
@@ -101,13 +101,13 @@ router.put('/addCompany', (req, res) => {
 
 router.put('/editCompanyById/:companyId', (req, res) => {
     const CompanyId = req.params.companyId;
+
     const updatedCompanyData = req.body;
     console.log(CompanyId,updatedCompanyData);
 
     const values = [
         updatedCompanyData.CompanyName,
         updatedCompanyData.Address,
-        updatedCompanyData.Address2,
         updatedCompanyData.Country,
         updatedCompanyData.State,
         updatedCompanyData.City,
@@ -116,10 +116,12 @@ router.put('/editCompanyById/:companyId', (req, res) => {
         updatedCompanyData.VATNo,
         updatedCompanyData.CIN,
         updatedCompanyData.Currency,
+        updatedCompanyData.Address2,
         CompanyId
     ];
+    console.log(values,"hii",[values]);
 
-    connection.query('UPDATE companies SET CompanyName = ?, Address = ?, Address2 = ?, Country = ?, State = ?, City = ?, Zipcode = ?, GSTNo = ?, VATNo = ?, CIN = ?,Currency = ? WHERE CompanyId = ?', values, (err, results) => {
+    connection.query('UPDATE companies SET CompanyName = ?, Address = ?, Country = ?, State = ?, City = ?, Zipcode = ?, GSTNo = ?, VATNo = ?, CIN = ?,Currency = ?, Address2 = ? WHERE CompanyId = ?', values, (err, results) => {
         if (err) {
             console.error('Error executing the query: ', err);
             res.status(500).json({ error: 'Internal Server Error' });
